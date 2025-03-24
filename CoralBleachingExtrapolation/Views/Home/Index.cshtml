@@ -1,0 +1,47 @@
+﻿<!--25-2-2025   1.0              Ben         setting up polygon navigation-->
+
+@{
+    ViewData["Title"] = "Global Coral";
+}
+@model List<WorldCoral>
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Shape</th>
+                <th>RegionID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var coral in Model)
+            {
+                <tr>
+                    <td>@coral.GlobalCoralId</td>
+                    <td>@coral.CoralName</td>
+                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; display: block;">@coral.Shape</td>
+                    <td>@coral.RegionFK</td>
+                    <td>
+                        <a asp-controller="Home" asp-action="Update" asp-route-id="@coral.GlobalCoralId" class="btn btn-primary btn-sm">
+                            Update
+                        </a>
+                    
+                        <a asp-controller="Home" asp-action="" class="btn btn-danger btn-sm">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

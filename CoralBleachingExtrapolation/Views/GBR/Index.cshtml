@@ -1,0 +1,51 @@
+﻿<!--03-03-2025   1.0   Keelin  Setting up Point Button Navigation-->
+
+@{
+    ViewData["Title"] = "GBR Coral";
+}
+@model List<GBRCoralPoint>
+
+<h1>@ViewData["Title"]</h1>
+
+
+<div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Point</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var coral in Model)
+            {
+                <tr>
+                    <td>@coral.GBRCoralPointID</td>
+                    <td>@coral.ReefName</td>
+                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; display: block;">@coral.Point</td>
+                    
+                    <td>
+                        <a asp-controller="GBR" asp-action="Create" asp-route-id="@coral.GBRCoralPointID" class="btn btn-primary btn-sm">
+                            Create
+                        </a>
+
+                        <a asp-controller="GBR" asp-action="Update" asp-route-id="@coral.GBRCoralPointID" class="btn btn-primary btn-sm">
+                            Update
+                        </a>
+
+                        <a asp-controller="GBR" asp-action="" class="btn btn-danger btn-sm">
+                            Delete
+                        </a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

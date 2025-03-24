@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Single Record";
+}
+@model WorldCoral
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Shape</th>
+                <th>RegionID</th>
+                <th>OriginName</th>
+                <th>Family</th>
+                <th>Genus</th>
+                <th>Species</th>
+                <th>Area</th>
+            </tr>
+        </thead>
+        public string? OriginName {  get; set; }
+        public string? Family { get; set; }
+        public string? Genus { get; set; }
+        public string? Species { get; set; }
+        public double? GISAREAKM2 { get;set; }
+        <tbody>
+                <tr>
+                    <td>Model.GlobalCoralId</td>
+                    <td>Model.CoralName</td>
+                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; display: block;">Model.Shape</td>
+                    <td>Model.OrignName</td>
+                    <td>Model.Family</td>
+                    <td>Model.Genus</td>
+                    <td>Model.Species</td>
+                    <td>Model.RegionFK</td>
+                </tr>
+           
+        </tbody>
+    </table>
+
+</div>
