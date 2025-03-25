@@ -7,6 +7,8 @@ using System.Linq;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using NetTopologySuite.Algorithm;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 /// <summary>
 /// Date         Version     Name       Comment
@@ -40,6 +42,8 @@ namespace CoralBleachingExtrapolation.Controllers
             TheModel = _db.tbl_GBRCoralPoint
                                .OrderByDescending(x => x.GBRCoralPointID) // Sort by ID in descending                   // Get the last 10 records
                                .ToList();
+
+
 
             return View(TheModel);
         }

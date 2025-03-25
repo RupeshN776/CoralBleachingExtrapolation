@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Algorithm;
+using Microsoft.SqlServer.Types;
 
 namespace CoralBleachingExtrapolation.Models
 {
