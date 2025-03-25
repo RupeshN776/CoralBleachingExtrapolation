@@ -8,7 +8,31 @@
 <h1>@ViewData["Title"]</h1>
 
 <div>
+    <div>
+        <h2>About Corals</h2>
+        <p>Coral reefs are among the most diverse and important ecosystems on the planet. They provide habitat and shelter for nearly 25% of all marine species, acting as nurseries for fish and supporting biodiversity. Additionally, corals protect coastlines by reducing wave energy from storms and erosion, benefiting both marine life and human communities. However, corals face severe threats from climate change, pollution, and ocean acidification. Coral bleaching, caused by rising ocean temperatures, weakens these fragile organisms and leads to massive reef degradation, endangering the species that depend on them.</p>
 
+        <h2>What We Offer</h2>
+        <p>Our website provides tools and insights to help you understand and track coral reefs worldwide. We offer features that allow you to:</p>
+        <ul>
+            <li><a asp-controller="Polygon" asp-action="Create">Create your own coral polygon</a> to map and study coral distributions.</li>
+            <li><a asp-controller="GBRCoral" asp-action="AddPoint">Add a point</a> to the Great Barrier Reef dataset.</li>
+            <li><a asp-controller="Polygon" asp-action="View">View changes over time</a> in your own or existing coral polygons using a time scale visualization.</li>
+        </ul>
+
+        <div>
+            <div>
+                <h3>Great Barrier Reef Corals</h3>
+                <p>Learn about the unique coral species of the GBR.</p>
+                <a asp-controller="GBR" asp-action="Index">Explore GBR Coral</a>
+            </div>
+            <div>
+                <h3>Global Coral Reefs</h3>
+                <p>Discover coral reefs from around the world.</p>
+                <a asp-controller="Home" asp-action="Info">Explore Global Coral</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive">
@@ -23,7 +47,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var coral in Model)
+            @foreach (var coral in Model)
             {
                 <tr>
                     <td>@coral.GlobalCoralId</td>
@@ -34,8 +58,8 @@
                         <a asp-controller="Home" asp-action="Update" asp-route-id="@coral.GlobalCoralId" class="btn btn-primary btn-sm">
                             Update
                         </a>
-                    
-                        <a asp-controller="Home" asp-action="" class="btn btn-danger btn-sm">
+
+                        <a asp-controller="Home" asp-action="Delete" asp-route-id="@coral.GlobalCoralId" class="btn btn-danger btn-sm">
                             Delete
                         </a>
                     </td>
@@ -43,5 +67,4 @@
             }
         </tbody>
     </table>
-
 </div>
