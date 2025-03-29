@@ -10,11 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 /// 03-02-2025  1.0     Keelin   Point GBR Implimenting UML (GBRCoral.cs) 
 /// 03-02-2025  1.0.1   Keelin   Fixing references and errors (InvalidOperationException, InvalidColumnName) 
 /// 03-22-2025  1.0.2   Keelin   Making it work with the index 
+/// 03-24-2025  1.1     Keelin   Adjusted to new Database changes. 
 /// </summary>
 /// 
 
 namespace CoralBleachingExtrapolation.Models
 {
+    //removed. 
+
     //public class MedianLiveCoral
     //{
     //    [Key]
@@ -55,5 +58,7 @@ namespace CoralBleachingExtrapolation.Models
         public int? MedianSoftCoralFK { get; set; }
         public  int? MedianDeadCoralFK { get; set; }
     }
+
+    //P: okay
 
 }

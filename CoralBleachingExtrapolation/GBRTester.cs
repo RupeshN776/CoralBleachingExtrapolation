@@ -14,6 +14,8 @@ namespace CoralBleachingExtrapolation
         /// Date         Version     Name       Comment
         /// 03-22-2025   1.0         Rupesh     Testing Intial - made self serving functions and test for GBRController. Could not test controller as complier cannot be changed
         ///                                     Hence, all code was written based off of initial Read all and can be entirely wrong.
+        ///                                     
+        /// 03-22-2025   1.0         Rupesh     DO NOT CONSIDER FOR SPRINT 4
         /// </summary>
 
 
@@ -26,114 +28,114 @@ namespace CoralBleachingExtrapolation
             _db = db;
         }
         
-        //all self serving tests for marks only, are not real application and DO NOT test the product.
-        public void ReadAllGBRCoral()
-        {
-            Console.WriteLine("Reading GBR Coral Points...");
-            TheModel = _db.tbl_GBRCoralPoint.ToList();
+        ////all self serving tests for marks only, are not real application and DO NOT test the product.
+        //public void ReadAllGBRCoral()
+        //{
+        //    Console.WriteLine("Reading GBR Coral Points...");
+        //    TheModel = _db.tbl_GBRCoralPoint.ToList();
 
-            foreach (var coral in TheModel)
-            {
-                Console.WriteLine($"ID: {coral.GBRCoralPointID}, Reef Name: {coral.ReefName}, Latitude: {coral.Latitude}, Longitude: {coral.Longitude}, " +
-                                  $"Report Year: {coral.ReportYear}, Mean Live Coral Value: {coral.MeanLiveCoral},  Mean Soft Coral Value: {coral.MeanSoftCoral}, " +
-                                  $" Mean Dead Coral Value: {coral.MeanDeadCoral}, MedianCoralValue");
-            }
-        }
+        //    foreach (var coral in TheModel)
+        //    {
+        //        Console.WriteLine($"ID: {coral.GBRCoralPointID}, Reef Name: {coral.ReefName}, Latitude: {coral.Latitude}, Longitude: {coral.Longitude}, " +
+        //                          $"Report Year: {coral.ReportYear}, Mean Live Coral Value: {coral.MeanLiveCoral},  Mean Soft Coral Value: {coral.MeanSoftCoral}, " +
+        //                          $" Mean Dead Coral Value: {coral.MeanDeadCoral}, MedianCoralValue");
+        //    }
+        //}
 
-        public void ReadSolo_TEST(int id)
-        {
-            GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id); //this is sick
+        //public void ReadSolo_TEST(int id)
+        //{
+        //    GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id); //this is sick
 
-            if (coral != null)
-            {
-                Console.WriteLine($"ID: {coral.GBRCoralPointID}, Reef Name: {coral.ReefName}, Latitude: {coral.Latitude}, Longitude: {coral.Longitude}, " +
-                                  $"Report Year: {coral.ReportYear}, Mean Live Coral Value: {coral.MeanLiveCoral},  Mean Soft Coral Value: {coral.MeanSoftCoral}, " +
-                                  $" Mean Dead Coral Value: {coral.MeanDeadCoral}, MedianCoralValue");
-            }
-            else
-            {
-                Console.WriteLine($"{id} is invalid.");
-            }
-        }
+        //    if (coral != null)
+        //    {
+        //        Console.WriteLine($"ID: {coral.GBRCoralPointID}, Reef Name: {coral.ReefName}, Latitude: {coral.Latitude}, Longitude: {coral.Longitude}, " +
+        //                          $"Report Year: {coral.ReportYear}, Mean Live Coral Value: {coral.MeanLiveCoral},  Mean Soft Coral Value: {coral.MeanSoftCoral}, " +
+        //                          $" Mean Dead Coral Value: {coral.MeanDeadCoral}, MedianCoralValue");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"{id} is invalid.");
+        //    }
+        //}
 
-        public void Create_TEST(string reefName, double latitude, double longitude)
-        {
+        //public void Create_TEST(string reefName, double latitude, double longitude)
+        //{
          
-            GBRCoralPoint newCoral = new GBRCoralPoint
-            {
-                ReefName = reefName,
-                Latitude = (decimal?)latitude,
-                Longitude = (decimal?)longitude
-            };
+        //    GBRCoralPoint newCoral = new GBRCoralPoint
+        //    {
+        //        ReefName = reefName,
+        //        Latitude = (decimal?)latitude,
+        //        Longitude = (decimal?)longitude
+        //    };
 
-            _db.tbl_GBRCoralPoint.Add(newCoral);
-            _db.SaveChanges();
+        //    _db.tbl_GBRCoralPoint.Add(newCoral);
+        //    _db.SaveChanges();
 
-            Console.WriteLine($"New Coral Added To Dataabase at ID: {newCoral.GBRCoralPointID}");
-        }
+        //    Console.WriteLine($"New Coral Added To Dataabase at ID: {newCoral.GBRCoralPointID}");
+        //}
 
-        public void Update_TEST(int id, string newReefName)
-        {
-            GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id);
+        //public void Update_TEST(int id, string newReefName)
+        //{
+        //    GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id);
 
-            if (coral != null)
-            {
-                coral.ReefName = newReefName;
-                _db.tbl_GBRCoralPoint.Update(coral);
-                _db.SaveChanges();
+        //    if (coral != null)
+        //    {
+        //        coral.ReefName = newReefName;
+        //        _db.tbl_GBRCoralPoint.Update(coral);
+        //        _db.SaveChanges();
 
-                Console.WriteLine($"Coral Updated at ID: {coral.GBRCoralPointID}");
-            }
-            else
-            {
-                Console.WriteLine($"({id} is invalid)");
-            }
-        }
+        //        Console.WriteLine($"Coral Updated at ID: {coral.GBRCoralPointID}");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"({id} is invalid)");
+        //    }
+        //}
 
-        public void Delete_TEST(int id)
-        {
-            GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id);
+        //public void Delete_TEST(int id)
+        //{
+        //    GBRCoralPoint coral = _db.tbl_GBRCoralPoint.Find(id);
 
-            if (coral != null)
-            {
-                _db.tbl_GBRCoralPoint.Remove(coral);
-                _db.SaveChanges();
+        //    if (coral != null)
+        //    {
+        //        _db.tbl_GBRCoralPoint.Remove(coral);
+        //        _db.SaveChanges();
 
-                Console.WriteLine($"Coral Deleted at ID: {id}");
-            }
-            else
-            {
-                Console.WriteLine($"( {id}  is invalid)");
-            }
-        }
+        //        Console.WriteLine($"Coral Deleted at ID: {id}");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"( {id}  is invalid)");
+        //    }
+        //}
 
 
-        static void Main(string[] args) 
-        {
-            //copied from Controller
-            var builder = WebApplication.CreateBuilder(args);
-
-            
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
-            x => x.UseNetTopologySuite() // Enable spatial support
-            ));
+        //static void Main(string[] args) 
+        //{
+        //    //copied from Controller
+        //    var builder = WebApplication.CreateBuilder(args);
 
             
-            var serviceProvider = builder.Services.BuildServiceProvider();
+        //    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        //    options.UseSqlServer(
+        //    builder.Configuration.GetConnectionString("DefaultConnection"),
+        //    x => x.UseNetTopologySuite() // Enable spatial support
+        //    ));
 
             
-            var dbContext = serviceProvider.GetRequiredService<ApplicationDbContextGBR>();
+        //    var serviceProvider = builder.Services.BuildServiceProvider();
 
             
-            var GBRcontroller = new GBRController(dbContext);
+        //    var dbContext = serviceProvider.GetRequiredService<ApplicationDbContextGBR>();
+
+            
+        //    var GBRcontroller = new GBRController(dbContext);
 
 
-            //Index read all 
+        //    //Index read all 
           
-            var index_result = GBRcontroller.Index(); 
-            Console.WriteLine("Index Read All: " + (index_result));
+        //    var index_result = GBRcontroller.Index(); 
+        //    Console.WriteLine("Index Read All: " + (index_result));
 
 
 
@@ -179,7 +181,7 @@ namespace CoralBleachingExtrapolation
 
         //    var delete_result = GBRcontroller.Delete(new GBRCoralPoint { GBRCoralPointID = 1 });  // Pass object with ID to delete
         //    Console.WriteLine("Deleted: " + (deleteResult));
-        }
+        //}
 
 
     }
