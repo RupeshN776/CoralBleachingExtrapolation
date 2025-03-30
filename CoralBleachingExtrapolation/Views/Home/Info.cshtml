@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewData["Title"] = "View";
+}
+@model List<WorldCoral>
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h2 style="position:center">Global Corals Around the World</h2>
+    <p>Coral reefs are among the most diverse and essential ecosystems on the planet. Often called the "rainforests of the sea," they provide habitat and shelter for approximately 25% of all marine species, including fish, crustaceans, and mollusks. These reefs act as natural wave barriers, protecting coastal communities from erosion, hurricanes, and storm surges. Beyond their ecological importance, corals play a crucial role in global economies through tourism, fisheries, and even medical research. However, coral reefs are facing severe threats due to climate change, ocean acidification, pollution, and destructive fishing practices. One of the most pressing dangers is coral bleaching, a phenomenon in which corals lose their symbiotic algae due to increased ocean temperatures, turning them white and making them more susceptible to disease and mortality.</p>
+
+
+    <h2>Common Coral Types</h2>
+    <p>Below are ten of the most common coral species found around the world.</p>
+
+    <div id="coral-list">
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let corals = [
+                    "Staghorn Coral", "Elkhorn Coral", "Brain Coral", "Pillar Coral", "Lettuce Coral", "Star Coral", "Table Coral", "Foliose Coral", "Bubble Coral", "Mushroom Coral"
+                ];
+
+                let container = document.getElementById("coral-list");
+                corals.forEach(coral => {
+                    let coralBox = document.createElement("div");
+                    coralBox.innerHTML = `<h3>${coral}</h3><p>3D Model Placeholder</p>`;
+                    coralBox.style.border = "1px solid black";
+                    coralBox.style.margin = "10px";
+                    coralBox.style.padding = "10px";
+                    coralBox.style.display = "inline-block";
+                    coralBox.style.width = "200px";
+                    coralBox.style.textAlign = "center";
+                    container.appendChild(coralBox);
+                });
+            });
+        </script>
+    </div>
+</div>
+
+<!--TODO: DOESNT NOT DISPLAY POLYGON: LAT LNG NOT RETRIVED-->
+@* <div>
+    <script>
+        var map;
+
+        function initMap() {
+            // Create a map centered at a default location (Global)
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 }, // Default center: Global
+                zoom: 3, // Zoom out to see the whole globe
+            });
+
+            // Pass the corals list to JavaScript and pick a random one
+            var corals = @Html.Raw(Json.Serialize(Model)); // Serialize the Model to JavaScript
+
+            // Pick a random coral from the list
+            var randomCoral = corals[Math.floor(Math.random() * corals.length)];
+
+            // Define the coordinates for the polygon of the random coral
+            var coordinates = randomCoral.Coordinates.map(function (c) {
+                return { lat: c.Latitude, lng: c.Longitude };
+            });
+
+            // Create a polygon using the coordinates
+            var coralPolygon = new google.maps.Polygon({
+                paths: coordinates,
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35,
+            });
+
+            // Set the polygon on the map
+            coralPolygon.setMap(map);
+
+            // Optionally, add an info window to the polygon
+            var infoWindow = new google.maps.InfoWindow({
+                content: `<h3>${randomCoral.CoralName}</h3><p>Polygon area representing this coral.</p>`
+            });
+
+            // Open the info window when clicking on the polygon
+            coralPolygon.addListener("click", function (event) {
+                infoWindow.setPosition(event.latLng);
+                infoWindow.open(map);
+            });
+
+            // Now adjust the map view to fit the polygon
+            var bounds = new google.maps.LatLngBounds();
+
+            // Extend bounds with each coordinate of the polygon
+            coordinates.forEach(function (coord) {
+                bounds.extend(new google.maps.LatLng(coord.lat, coord.lng));
+            });
+
+            // Fit the map to the polygon bounds
+            map.fitBounds(bounds);
+
+            // Adjust zoom level
+            map.setZoom(15);  // Set zoom to 15 after fitting bounds
+        }
+
+        window.initMap = initMap;
+    </script>
+
+    <div id="map" style="height: 400px;"></div>
+
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=ADD_API_KEYjo&callback=initMap"></script>
+</div> *@
+
+

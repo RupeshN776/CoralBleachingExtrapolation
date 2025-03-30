@@ -7,6 +7,8 @@ using System.Linq;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using NetTopologySuite.Algorithm;
+using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// Date        Version          Name        Comment
@@ -136,5 +138,58 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
 
-    
+
+    //--------------------------------Info Page----------------------------------//
+    public IActionResult Info()
+    {
+        return View();
+    }
+
+    //--------------------------------TODO: CORAL POLYGON VIEW FOR MAP----------------------------------//
+
+    //public IActionResult ViewCoral(int id)
+    //{
+    //    // Fetch coral from the database
+    //    var coral = _db.tbl_GlobalCoralPolygon
+    //        .Where(c => c.GlobalCoralId == id)
+    //        .FirstOrDefault();
+
+    //    // Check if coral is found
+    //    if (coral == null)
+    //    {
+    //        return NotFound();  // Return 404 if no coral is found
+    //    }
+
+    //    // Assuming coral has a Shape (Polygon) with Coordinates
+    //    var coordinates = new List<object>();
+
+    //    if (coral.Shape != null)
+    //    {
+    //        var points = coral.Shape.STAsText().Value;
+
+    //        // Parse WKT (Well-Known Text) into coordinates (for polygons)
+    //        var matches = Regex.Matches(points, @"\(([^)]*)\)");  // Regular expression to extract coordinates
+    //        foreach (var match in matches)
+    //        {
+    //            var coords = match.Groups[1].Value.Split(',');  // Coordinates are separated by a comma
+    //            foreach (var coord in coords)
+    //            {
+    //                var latLon = coord.Split(' ');
+    //                var latitude = Convert.ToDouble(latLon[0].Trim());
+    //                var longitude = Convert.ToDouble(latLon[1].Trim());
+    //                coordinates.Add(new { Latitude = latitude, Longitude = longitude });
+    //            }
+    //        }
+    //    }
+
+    //    // Pass coordinates to the view using ViewBag
+    //    ViewBag.CoralCoordinates = coordinates;
+
+    //    return View(coral);
+    //}
+
+
+
+
+
 }
