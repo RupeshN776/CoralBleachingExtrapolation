@@ -16,6 +16,7 @@
                     <div class="form-group mb-3">
                         <label asp-for="ReportYear" class="form-label">Report Year</label>
                         <input asp-for="ReportYear" class="form-control" placeholder="Enter the Report Year"></input>
+                        <span asp-validation-for="ReportYear" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">Create</button>
