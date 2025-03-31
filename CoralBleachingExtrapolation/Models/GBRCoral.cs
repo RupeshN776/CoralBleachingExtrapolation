@@ -64,7 +64,12 @@ namespace CoralBleachingExtrapolation.Models
             {
                 Latitude = Latitude.HasValue ? (float)Latitude.Value : (float?)null,
                 Longitude = Longitude.HasValue ? (float)Longitude.Value : (float?)null,
-                ReefName
+                ReefName,
+                ReportYear,
+                MeanLiveCoral,
+                MeanSoftCoral,
+                MeanDeadCoral,
+                GBRCoralPointID
             });
         }
     }

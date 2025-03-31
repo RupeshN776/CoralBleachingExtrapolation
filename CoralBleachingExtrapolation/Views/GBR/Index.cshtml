@@ -1,4 +1,5 @@
 ﻿<!--03-03-2025   1.0   Keelin  Setting up Point Button Navigation-->
+<!--03-30-2025   2.0   Ben  Add map view and move functionality to info window-->
 
 @{
     ViewData["Title"] = "GBR Coral";
@@ -16,22 +17,55 @@
     console.log(coralPoints); // Log the entire coralPoints array to check its structure
 
     var map; // Declare the map variable to be used later
+    var currentInfoWindow = null; 
 
     // Function to add a marker
-    function addMarker(cords, reefName) {
+    function addMarker(cords, point, index) {
+        var iconUrl = (index % 2 === 0) 
+            ? "/assets/coral-map-icon-blue.png" // Even index
+            : "/assets/coral-map-icon-red.png"; // Odd index
+
         var marker = new google.maps.Marker({
             position: cords,
             map: map,
+            icon: {
+                url: iconUrl,
+                scaledSize: new google.maps.Size(30, 30) // Adjust size if needed
+            }
         });
 
         // Create an InfoWindow
+        var updateUrl = `/GBR/Update/${point.GBRCoralPointID}`;
+
         var infoWindow = new google.maps.InfoWindow({
-            content: reefName
+            content: `
+                <div class="info-window">
+                    <h4>${point.ReefName || "Unknown Reef"}</h4>
+                    <ul>
+                        <li><strong>Latitude:</strong> ${point.Latitude}</li>
+                        <li><strong>Longitude:</strong> ${point.Longitude}</li>
+                        <li><strong>Reported Year:</strong> ${point.ReportYear || "N/A"}</li>
+                        <li><strong>Mean Live Coral:</strong> ${point.MeanLiveCoral || "N/A"}</li>
+                        <li><strong>Mean Soft Coral:</strong> ${point.MeanSoftCoral || "N/A"}</li>
+                        <li><strong>Mean Dead Coral:</strong> ${point.MeanDeadCoral || "N/A"}</li>
+                        <li><strong>Description:</strong> Beautiful coral reef location 🌊🐠</li>
+                        <a href="${updateUrl}" class="btn btn-primary btn-sm" target="_blank">
+                            Update
+                        </a>
+                    </ul>
+                </div>
+            `
         });
 
-        // Add click event listener to show the InfoWindow on marker click
-        marker.addListener('click', function () {
+        marker.addListener("click", function () {
+            // Close the previously opened InfoWindow if it exists
+            if (currentInfoWindow && currentInfoWindow !== infoWindow) {
+                currentInfoWindow.close();
+            }
+
+            // Open the new InfoWindow
             infoWindow.open(map, marker);
+            currentInfoWindow = infoWindow;
         });
     }
 
@@ -41,11 +75,11 @@
             zoom: 5 
         });
 
-        coralPoints.forEach(function (coralPoint) {
+        coralPoints.forEach(function (coralPoint, index) {  // Pass index
             var point = JSON.parse(coralPoint);
             var cords = { lat: point.Latitude, lng: point.Longitude };
-            var reefName = point.ReefName; // Get the ReefName
-            addMarker(cords, reefName); // Add marker with ReefName as info
+
+            addMarker(cords, point, index); // Pass index to addMarker
         });
     }
 
@@ -53,11 +87,15 @@
     window.initMap = initMap;
 </script>
 
+<div>
+    <a asp-controller="GBR" asp-action="Create"  class="btn btn-primary btn-sm"> Create Point</a>
+</div>
+
 <div id="map"></div>
 
-<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABhiUQNg89xlM8r4_4ahrdxRYzUU2QTjo&callback=initMap"></script>
+<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCl9wlkSaxBSzvuXqaLyXIaVBWCYlomQmY&callback=initMap"></script>
 
-
+@*
 <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead>
@@ -99,26 +137,4 @@
 
 </div>
 
-<script>
-    var map;
-
-    function initMap() {
-
-        map = new google.maps.Map(document.getElementById("map"),
-
-            {
-                center: { lat: 51.5074, lng: -0.1278 }, //london, UK
-                zoom: 13, //standard
-            }
-
-        ); //map
-
-    }
-
-    window.initMap = initMap();
-    
-</script>
-
-<div id="map"></div>
-
-<script defer src="https://maps.googleapis.com/maps/api/js?key=ADD_API_KEY&callback=initMap"></script>
+*@
