@@ -15,9 +15,9 @@
         <h2>What We Offer</h2>
         <p>Our website provides tools and insights to help you understand and track coral reefs worldwide. We offer features that allow you to:</p>
         <ul>
-            <li><a asp-controller="Home" asp-action="Create">Create your own coral polygon</a> to map and study coral distributions.</li>
-            <li><a asp-controller="GBR" asp-action="Create">Add a point</a> to the Great Barrier Reef dataset.</li>
-            <li>View changes over time in your own or existing coral polygons using a time scale visualization. TO BE ADDED</li>
+            <li><a asp-controller="Polygon" asp-action="Create">Create your own coral polygon</a> to map and study coral distributions.</li>
+            <li><a asp-controller="GBRCoral" asp-action="AddPoint">Add a point</a> to the Great Barrier Reef dataset.</li>
+            <li><a asp-controller="Polygon" asp-action="View">View changes over time</a> in your own or existing coral polygons using a time scale visualization.</li>
         </ul>
 
         <div>
@@ -59,9 +59,9 @@
                             Update
                         </a>
 
-                        @* <a asp-controller="Home" asp-action="Delete" asp-route-id="@coral.GlobalCoralId" class="btn btn-danger btn-sm">
+                        <a asp-controller="Home" asp-action="Delete" asp-route-id="@coral.GlobalCoralId" class="btn btn-danger btn-sm">
                             Delete
-                        </a> *@
+                        </a>
                     </td>
                 </tr>
             }

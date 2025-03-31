@@ -2,7 +2,7 @@
 @model GBRCoralPoint
 
 <div class="container mt-4">
-    <class class="row">
+    <div class="row">
         <class ="card">
             <div class="card-header bg-primary text-white">
                 <h2> Create GBR Coral</h2>
@@ -13,13 +13,10 @@
                         <label asp-for="ReefName" class="form-label">Reef Name</label>
                         <input asp-for="ReefName" class="form-control" placeholder="Enter the Reef Name"></input>
                     </div>
-
                     <div class="form-group mb-3">
                         <label asp-for="ReportYear" class="form-label">Report Year</label>
                         <input asp-for="ReportYear" class="form-control" placeholder="Enter the Report Year"></input>
-                        <span asp-validation-for="ReportYear" class="text-danger"></span>
                     </div>
-
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">Create</button>
                         <a asp-controller="GBR" asp-action="Index" class="btn btn-danger">Cancel</a>

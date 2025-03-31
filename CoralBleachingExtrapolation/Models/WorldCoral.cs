@@ -22,9 +22,7 @@ namespace CoralBleachingExtrapolation.Models
         public double? GISAREAKM2 { get;set; }
         public int? RegionFK { get;set; }
 
-        //lamda if we find out we need it when we implementing the html stuff -- P: what has become of this ?
-
-        //P:okay
+        //lamda if we find out we need it when we implementing the html stuff
        
 
 

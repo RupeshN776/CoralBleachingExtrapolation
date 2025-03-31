@@ -16,7 +16,6 @@ using System.Text.Json;
 /// 03-15-2025   1.0.1       Keelin     bug fixes
 /// 03-22-2025   1.0.2       Keelin     more bug fixes
 /// 03-22-2025   PROMOTE     Rupesh     PROMOTE TESTING and COMMENTS
-/// 03-24-2025   1.0.2       Keelin     bug fixes based on promote code
 /// </summary>
 /// 
 
@@ -50,7 +49,7 @@ namespace CoralBleachingExtrapolation.Controllers
             return View(TheModel);
         }
 
-        //--------------------------------Read One:TODO----------------------------------// //PROMOTE: mising try catch why? // only implemented on assembly, does not interact with client. 
+        //--------------------------------Read One:TODO----------------------------------//
         public IActionResult Read(int id)
         {
             if (id == null || id == 0)
@@ -76,22 +75,12 @@ namespace CoralBleachingExtrapolation.Controllers
 
         [HttpPost]
 
-        public IActionResult Create(GBRCoralPoint obj)  //PROMOTE: does not check report year input. default lat lng are antartica does not ask for client input. 
+        public IActionResult Create(GBRCoralPoint obj)  //does not check report year input. //default lat lng are antartica
         {
-            if (obj.ReportYear < 1980 || obj.ReportYear > 2025)
-            {
-                ModelState.AddModelError("ReportYear", "Report Year must be between 1980 and 2025.");
-            }
 
-            obj.Latitude = 1; //default initial
+            obj.Latitude = 1;
             obj.Longitude = 1;
 
-            //string wkt = $"POINT ({obj.Longitude} {obj.Latitude})"; // WKT for a single point //PROMOTE: why in antartica? //fixed
-
-            if (!ModelState.IsValid)
-            {
-                return View(obj); // Return to form
-            }
 
             string wkt = "POINT (-75.0 40.0)"; // WKT for a single point //why in antartica
 
@@ -107,7 +96,6 @@ namespace CoralBleachingExtrapolation.Controllers
                     obj.Point.SRID = 4326; 
                     _db.tbl_GBRCoralPoint.Add(obj);
                     _db.SaveChanges();
-                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -115,7 +103,7 @@ namespace CoralBleachingExtrapolation.Controllers
                     return View("Error");
                 }
 
-                return View(obj);
+                return View();
             }
             catch (NetTopologySuite.IO.ParseException ex)
             {
@@ -132,12 +120,12 @@ namespace CoralBleachingExtrapolation.Controllers
 
 
         //--------------------------------Update----------------------------------//
-        //GBR Update - does not test input year, WKT format does not reflect updated Lat Long. //sprint 5 assigned. 
+        //GBR Update - does not test input year, WKT format does not reflect updated Lat Long.
         //GBR update - breaks upon invalid lat lng input
 
 
                 [HttpGet]
-        public IActionResult Update(int? id) // Update ??PROMTE NOTE: purpose for overload? name differently perhaps? //only used for button interaction on client side. //okay
+        public IActionResult Update(int? id) // Update ??PROMTE NOTE: purpose for overload? name differently perhaps? 
         {
             if (id == null || id == 0)
             {
@@ -154,36 +142,15 @@ namespace CoralBleachingExtrapolation.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(GBRCoralPoint obj, string ShapeWkt)  //PROMOTE: CHECK LAT LONG INPUT AND REPORT YEAR. //fixed //P: WKT DOES NOT REFLECT LAT LNG CHANGES. //agreed to do next sprint if not possible now. 
+        public IActionResult Update(GBRCoralPoint obj, string ShapeWkt) 
         {
-            // check lat
-            if (obj.Latitude < -90 || obj.Latitude > 90)
-            {
-                ModelState.AddModelError("Latitude", "Invalid Input. Latitude must be between -90 and 90."); //check lat
-            }
-            //check long
-            if (obj.Longitude < -180 || obj.Longitude > 180)
-            {
-                ModelState.AddModelError("Longitude", "Invalid Input. Longitude must be between -180 and 180."); //check long
-            }
-
-            if (obj.ReportYear < 1980 || obj.ReportYear > 2025)
-            {
-                ModelState.AddModelError("ReportYear", "Report Year must be between 1980 and 2025."); //check report year
-            }
-
             if (!string.IsNullOrEmpty(ShapeWkt))
             {
                 try
                 {
                     var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326); // SRID 4326 for geography
                     var reader = new WKTReader(geometryFactory);
-
                     obj.Point = (Point)reader.Read(ShapeWkt); // Convert WKT to Polygon
-
-                    string newWkt = $"POINT ({obj.Longitude} {obj.Latitude})"; //refelct the updated lat long. 
-
-                    obj.Point = (Point)reader.Read(newWkt);
                     obj.Point.SRID = 4326;
                 }
                 catch (Exception ex)
@@ -195,14 +162,14 @@ namespace CoralBleachingExtrapolation.Controllers
             if (ModelState.IsValid)
             {
                 _db.tbl_GBRCoralPoint.Update(obj);
-                _db.SaveChanges(); //P: error when lat or long input is invalid CHECK
+                _db.SaveChanges(); //error when lat or long input is invalid CHECK
                 return RedirectToAction("Index");
             }
 
-            return View(obj); //keeps the loop if they input incorrect values. 
+            return View(obj);
         }
         //--------------------------------Delete:TODO----------------------------------// 
-        //PROMOTE: DID NOT TEST - non-functional
+        //DID NOT TEST - non-functional
 
         public IActionResult Delete(GBRCoralPoint obj) //Delete
         {
