@@ -41,8 +41,6 @@ namespace CoralBleachingExtrapolation.Controllers
             //TheModel = _db.tbl_GlobalCoralPolygon.ToList();
 
             TheModel = _db.tbl_GBRCoralPoint
-                               .OrderByDescending(x => x.GBRCoralPointID) // Sort by ID in descending order
-                               .Take(10)                                  // Get the last 10 records
                                .ToList();
 
 
