@@ -159,6 +159,28 @@ public class HomeController : Controller
         return View();
     }
 
+    //--------------------------------Read Individual----------------------------------//
+
+    [HttpGet]
+    public IActionResult GetRandomPolygonJson()
+    {
+        var randomCoral = _db.tbl_GlobalCoralPolygon
+                             .OrderBy(r => Guid.NewGuid())
+                             .FirstOrDefault();
+
+        if (randomCoral == null || randomCoral.Shape == null)
+        {
+            return Json(new { success = false, message = "No valid coral polygon found." });
+        }
+
+        string wkt = WorldCoral.GetWKTFromPolygon(randomCoral.Shape);
+        string polygonJson = WorldCoral.ConvertWKTToLatLng(wkt);
+
+        return Json(new { success = true, polygon = polygonJson });
+    }
+
+
+
     //PROMOTE: WORK TOWARDS MAP INSERT
 
     //--------------------------------TODO: CORAL POLYGON VIEW FOR MAP----------------------------------//

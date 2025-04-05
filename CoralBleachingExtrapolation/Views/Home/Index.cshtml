@@ -8,34 +8,41 @@
 <h1>@ViewData["Title"]</h1>
 
 <div>
+    <h2>About Corals</h2>
+    <p>Coral reefs are among the most diverse and important ecosystems on the planet. They provide habitat and shelter for nearly 25% of all marine species, acting as nurseries for fish and supporting biodiversity. Additionally, corals protect coastlines by reducing wave energy from storms and erosion. However, corals face severe threats from climate change, pollution, and ocean acidification.</p>
+
+    <h2>What We Offer</h2>
+    <ul>
+        <li><a asp-controller="Home" asp-action="Create">Create your own coral polygon</a></li>
+        <li><a asp-controller="GBR" asp-action="Index">Add a point to the GBR dataset</a></li>
+        <li><a asp-controller="Home" asp-action="Index">View changes over time</a></li>
+    </ul>
+
     <div>
-        <h2>About Corals</h2>
-        <p>Coral reefs are among the most diverse and important ecosystems on the planet. They provide habitat and shelter for nearly 25% of all marine species, acting as nurseries for fish and supporting biodiversity. Additionally, corals protect coastlines by reducing wave energy from storms and erosion, benefiting both marine life and human communities. However, corals face severe threats from climate change, pollution, and ocean acidification. Coral bleaching, caused by rising ocean temperatures, weakens these fragile organisms and leads to massive reef degradation, endangering the species that depend on them.</p>
-
-        <h2>What We Offer</h2>
-        <p>Our website provides tools and insights to help you understand and track coral reefs worldwide. We offer features that allow you to:</p>
-        <ul>
-            <li><a asp-controller="Polygon" asp-action="Create">Create your own coral polygon</a> to map and study coral distributions.</li>
-            <li><a asp-controller="GBRCoral" asp-action="AddPoint">Add a point</a> to the Great Barrier Reef dataset.</li>
-            <li><a asp-controller="Polygon" asp-action="View">View changes over time</a> in your own or existing coral polygons using a time scale visualization.</li>
-        </ul>
-
-        <div>
-            <div>
-                <h3>Great Barrier Reef Corals</h3>
-                <p>Learn about the unique coral species of the GBR.</p>
-                <a asp-controller="GBR" asp-action="Index">Explore GBR Coral</a>
-            </div>
-            <div>
-                <h3>Global Coral Reefs</h3>
-                <p>Discover coral reefs from around the world.</p>
-                <a asp-controller="Home" asp-action="Info">Explore Global Coral</a>
-            </div>
-        </div>
+        <h3>Great Barrier Reef Corals</h3>
+        <a asp-controller="GBR" asp-action="Index">Explore GBR Coral</a>
+    </div>
+    <div>
+        <h3>Global Coral Reefs</h3>
+        <a asp-controller="Home" asp-action="Info">Explore Global Coral</a>
     </div>
 </div>
 
-<div class="table-responsive">
+<hr />
+
+<!-- Display selected coral info -->
+@*   @if (Model != null)
+  {
+      <div>
+          <h4>Selected Coral Info</h4>
+          <p><strong>ID:</strong> @Model.GlobalCoralId</p>
+          <p><strong>Name:</strong> @Model.CoralName</p>
+          <p><strong>Region:</strong> @Model.RegionFK</p>
+          <p><strong>Shape:</strong> @Model.Shape?.AsText()</p>
+      </div>
+  } *@
+
+  <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -68,3 +75,51 @@
         </tbody>
     </table>
 </div>
+
+<!-- Map Container -->
+<div id="map" style="width: 100%; height: 500px; margin-top: 20px;"></div>
+
+<script>
+    async function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 5,
+            center: { lat: 0.0, lng: 0.0 }
+            });
+
+        try {
+                const res = await fetch('/Home/GetRandomPolygonJson');
+            const data = await res.json();
+
+            if (!data.success || !data.polygon) {
+                    console.error("No polygon data found.");
+                return;
+            }
+
+            const coords = JSON.parse(data.polygon);
+            const bounds = new google.maps.LatLngBounds();
+
+            const polygon = new google.maps.Polygon({
+                paths: coords,
+                    strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35
+            });
+
+            polygon.setMap(map);
+
+            coords.forEach(coord => bounds.extend(new google.maps.LatLng(coord.lat, coord.lng)));
+                map.fitBounds(bounds);
+            } catch (error) {
+                console.error("Error loading map data:", error);
+            }
+        }
+
+        window.initMap = initMap;
+</script>
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=ADD_KEY&callback=initMap"></script>
+
+
