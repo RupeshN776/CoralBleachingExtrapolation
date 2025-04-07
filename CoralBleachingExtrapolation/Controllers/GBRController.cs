@@ -48,22 +48,6 @@ namespace CoralBleachingExtrapolation.Controllers
             return View(TheModel);
         }
 
-        //--------------------------------Read One:TODO----------------------------------// //PROMOTE: mising try catch why? // only implemented on assembly, does not interact with client. 
-        public IActionResult Read(int id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            GBRCoralPoint? Coral = _db.tbl_GBRCoralPoint.Find(id);
-
-            if (Coral == null)
-            {
-                return NotFound();
-            }
-            return View(Coral);
-        }
 
 
         //--------------------------------Create----------------------------------//
