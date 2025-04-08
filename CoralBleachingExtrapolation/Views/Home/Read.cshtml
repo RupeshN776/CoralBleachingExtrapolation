@@ -1,46 +1,47 @@
-﻿@{
-    ViewData["Title"] = "Single Record";
-}
-@model WorldCoral
+﻿
+<!-- Map Container -->
+<div id="map" style="width: 100%; height: 500px; margin-top: 20px;"></div>
 
-<h1>@ViewData["Title"]</h1>
+<script>
+    async function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 5,
+            center: { lat: 0.0, lng: 0.0 }
+            });
 
-<div>
-</div>
+        try {
+                const res = await fetch('/Home/GetRandomPolygonJson');
+            const data = await res.json();
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Shape</th>
-                <th>RegionID</th>
-                <th>OriginName</th>
-                <th>Family</th>
-                <th>Genus</th>
-                <th>Species</th>
-                <th>Area</th>
-            </tr>
-        </thead>
-        public string? OriginName {  get; set; }
-        public string? Family { get; set; }
-        public string? Genus { get; set; }
-        public string? Species { get; set; }
-        public double? GISAREAKM2 { get;set; }
-        <tbody>
-                <tr>
-                    <td>Model.GlobalCoralId</td>
-                    <td>Model.CoralName</td>
-                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; display: block;">Model.Shape</td>
-                    <td>Model.OrignName</td>
-                    <td>Model.Family</td>
-                    <td>Model.Genus</td>
-                    <td>Model.Species</td>
-                    <td>Model.RegionFK</td>
-                </tr>
-           
-        </tbody>
-    </table>
+            if (!data.success || !data.polygon) {
+                    console.error("No polygon data found.");
+                return;
+            }
 
-</div>
+            const coords = JSON.parse(data.polygon);
+            const bounds = new google.maps.LatLngBounds();
+
+            const polygon = new google.maps.Polygon({
+                paths: coords,
+                    strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35
+            });
+
+            polygon.setMap(map);
+
+            coords.forEach(coord => bounds.extend(new google.maps.LatLng(coord.lat, coord.lng)));
+                map.fitBounds(bounds);
+            } catch (error) {
+                console.error("Error loading map data:", error);
+            }
+        }
+
+        window.initMap = initMap;
+</script>
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=ADD_API_KEY&callback=initMap"></script>
+

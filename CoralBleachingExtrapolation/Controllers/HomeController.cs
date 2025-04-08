@@ -33,33 +33,22 @@ public class HomeController : Controller
     //PROMOTE: COMMENT ALL
 
     //--------------------------------Read All----------------------------------//
-    public IActionResult Index() // Read
+    public IActionResult Index()
     {
         //TheModel = _db.tbl_GlobalCoralPolygon.ToList();
 
-        TheModel = _db.tbl_GlobalCoralPolygon
-                           .OrderByDescending(x => x.GlobalCoralId) // Sort by ID in descending order
-                           .Take(10)                     // Get the last 10 records
-                           .ToList();
+        //TheModel = _db.tbl_GlobalCoralPolygon
+        //                   .OrderByDescending(x => x.GlobalCoralId) // Sort by ID in descending order
+        //                   .Take(10)                     // Get the last 10 records
+        //                   .ToList();
 
-        return View(TheModel);
+        return View();
     }
 
     //--------------------------------Read One:TODO----------------------------------// PROMOTE: MISSING TRY CATACH WHY? //only used in assembly
-    public IActionResult Read(int id)
+    public IActionResult Read()
     {
-        if (id == null || id == 0) //check if valid ID
-        {
-            return NotFound();
-        }
-
-        WorldCoral? Coral = _db.tbl_GlobalCoralPolygon.Find(id); //retrieve coral object
-
-        if (Coral == null) //check null coral object
-        {
-            return NotFound();
-        }
-        return View(Coral);//return
+        return View();//return
     }
 
 
