@@ -148,7 +148,7 @@ public class HomeController : Controller
         return View();
     }
 
-    //--------------------------------Read Individual----------------------------------//
+    //--------------------------------Read Random Polygon----------------------------------//
 
     [HttpGet]
     public IActionResult GetRandomPolygonJson()
@@ -165,58 +165,62 @@ public class HomeController : Controller
         string wkt = WorldCoral.GetWKTFromPolygon(randomCoral.Shape);
         string polygonJson = WorldCoral.ConvertWKTToLatLng(wkt);
 
-        return Json(new { success = true, polygon = polygonJson });
+        return Json(new
+        {
+            success = true,
+            polygon = polygonJson,
+            coralName = randomCoral.CoralName,
+            originName = randomCoral.OriginName,
+            family = randomCoral.Family,
+            genus = randomCoral.Genus,
+            species = randomCoral.Species,
+            gisAreaKm2 = randomCoral.GISAREAKM2,
+            regionId = randomCoral.RegionFK,
+            id = randomCoral.GlobalCoralId
+        });
+    }
+
+
+    //--------------------------------Read Polygon By ID----------------------------------//
+
+    [HttpGet]
+    public IActionResult GetPolygonById(int id)
+    {
+        var coral = _db.tbl_GlobalCoralPolygon.FirstOrDefault(c => c.GlobalCoralId == id);
+
+        if (coral == null || coral.Shape == null)
+        {
+            return Json(new { success = false, message = "Coral polygon not found." });
+        }
+
+        string wkt = WorldCoral.GetWKTFromPolygon(coral.Shape);
+        string polygonJson = WorldCoral.ConvertWKTToLatLng(wkt);
+
+        string regionName = coral.RegionFK switch
+        {
+            1 => "Atlantic Ocean",
+            2 => "Indian Ocean",
+            3 => "Pacific Ocean",
+            _ => "Unknown Region"
+        };
+
+        return Json(new
+        {
+            success = true,
+            polygon = polygonJson,
+            coralName = coral.CoralName,
+            originName = coral.OriginName,
+            family = coral.Family,
+            genus = coral.Genus,
+            species = coral.Species,
+            gisAreaKm2 = coral.GISAREAKM2,
+            regionId = coral.RegionFK,
+            regionName = regionName,
+            id = coral.GlobalCoralId
+        });
     }
 
 
 
-    //PROMOTE: WORK TOWARDS MAP INSERT
 
-    //--------------------------------TODO: CORAL POLYGON VIEW FOR MAP----------------------------------//
-
-    //public IActionResult ViewCoral(int id)
-    //{
-    //    // Fetch coral from the database
-    //    var coral = _db.tbl_GlobalCoralPolygon
-    //        .Where(c => c.GlobalCoralId == id)
-    //        .FirstOrDefault();
-
-    //    // Check if coral is found
-    //    if (coral == null)
-    //    {
-    //        return NotFound();  // Return 404 if no coral is found
-    //    }
-
-    //    // Assuming coral has a Shape (Polygon) with Coordinates
-    //    var coordinates = new List<object>();
-
-    //    if (coral.Shape != null)
-    //    {
-    //        var points = coral.Shape.STAsText().Value;
-
-    //        // Parse WKT (Well-Known Text) into coordinates (for polygons)
-    //        var matches = Regex.Matches(points, @"\(([^)]*)\)");  // Regular expression to extract coordinates
-    //        foreach (var match in matches)
-    //        {
-    //            var coords = match.Groups[1].Value.Split(',');  // Coordinates are separated by a comma
-    //            foreach (var coord in coords)
-    //            {
-    //                var latLon = coord.Split(' ');
-    //                var latitude = Convert.ToDouble(latLon[0].Trim());
-    //                var longitude = Convert.ToDouble(latLon[1].Trim());
-    //                coordinates.Add(new { Latitude = latitude, Longitude = longitude });
-    //            }
-    //        }
-    //    }
-
-    //    // Pass coordinates to the view using ViewBag
-    //    ViewBag.CoralCoordinates = coordinates;
-
-    //    return View(coral);
-    //}
-
-
-
-
-
-}
+    }
