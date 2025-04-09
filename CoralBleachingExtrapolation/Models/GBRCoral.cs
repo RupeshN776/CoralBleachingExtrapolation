@@ -48,7 +48,10 @@ namespace CoralBleachingExtrapolation.Models
         public int GBRCoralPointID { get; set; }
         public string? ReefName { get; set; }
         public Point? Point { get; set; }
+
+        [Required(ErrorMessage = "Latitude is required.")]
         public decimal? Latitude { get; set; }
+        [Required(ErrorMessage = "Longitude is required.")]
         public decimal? Longitude { get; set; }
         public int? ReportYear { get; set; }
         public double? MeanLiveCoral { get; set; }

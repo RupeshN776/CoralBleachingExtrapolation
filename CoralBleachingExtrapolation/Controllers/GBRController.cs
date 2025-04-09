@@ -56,30 +56,37 @@ namespace CoralBleachingExtrapolation.Controllers
             return View();
         }
 
-        [HttpPost]
 
-        public IActionResult Create(GBRCoralPoint obj)  //PROMOTE: does not check report year input. default lat lng are antartica does not ask for client input. 
+        [HttpPost]
+        public IActionResult Create(GBRCoralPoint obj)
         {
+            // Validate ReportYear
             if (obj.ReportYear < 1980 || obj.ReportYear > 2025)
             {
                 ModelState.AddModelError("ReportYear", "Report Year must be between 1980 and 2025.");
             }
 
-            obj.Latitude = 1; //default initial
-            obj.Longitude = 1;
-
-            //string wkt = $"POINT ({obj.Longitude} {obj.Latitude})"; // WKT for a single point //PROMOTE: why in antartica? //fixed
-
-            if (!ModelState.IsValid)
+            // Validate Latitude and Longitude
+            if (obj.Latitude < -90 || obj.Latitude > 90)
             {
-                return View(obj); // Return to form
+                ModelState.AddModelError("Latitude", "Latitude must be between -90 and 90.");
             }
 
-            string wkt = "POINT (-75.0 40.0)"; // WKT for a single point //why in antartica
+            if (obj.Longitude < -180 || obj.Longitude > 180)
+            {
+                ModelState.AddModelError("Longitude", "Longitude must be between -180 and 180.");
+            }
+
+            // Return form with errors if validation fails
+            if (!ModelState.IsValid)
+            {
+                return View(obj);
+            }
 
             try
             {
                 var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+                string wkt = $"POINT ({obj.Longitude} {obj.Latitude})";
                 var wktReader = new WKTReader(geometryFactory);
                 Geometry geometry = wktReader.Read(wkt);
 
@@ -87,29 +94,29 @@ namespace CoralBleachingExtrapolation.Controllers
                 {
                     obj.Point = point;
                     obj.Point.SRID = 4326;
+
                     _db.tbl_GBRCoralPoint.Add(obj);
                     _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    Console.WriteLine("The WKT string does not represent a valid Point.");
-                    return View("Error");
+                    ModelState.AddModelError("Point", "The provided coordinates do not form a valid point.");
+                    return View(obj);
                 }
-
-                return View(obj);
             }
             catch (NetTopologySuite.IO.ParseException ex)
             {
-                Console.WriteLine($"Error parsing WKT: {ex.Message}");
-                return View("Error");
+                ModelState.AddModelError("Point", $"Error parsing coordinates: {ex.Message}");
+                return View(obj);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                return View("Error");
+                ModelState.AddModelError("", $"Unexpected error: {ex.Message}");
+                return View(obj);
             }
         }
+
 
 
 
