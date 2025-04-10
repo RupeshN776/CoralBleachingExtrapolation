@@ -1,44 +1,173 @@
-﻿@model WorldCoral
+﻿@model CoralCreationViewModel
 
-<div class="container mt-4">
+@* <div class="container mt-4">
     <div class="row">
-        <class ="card">
+        <div class="card">
             <div class="card-header bg-primary text-white">
-                <h2> Create Global Coral</h2>
+                <h2>Create Global Coral</h2>
             </div>
-            <div ="card-body">
+            <div class="card-body">
                 <form asp-action="Create" method="post">
                     <div class="form-group mb-3">
                         <label asp-for="CoralName" class="form-label">Coral Name</label>
-                        <input asp-for="CoralName" class="form-control" placeholder="Enter the Coral Name"></input>
+                        <input asp-for="CoralName" class="form-control" placeholder="Enter the Coral Name" />
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="OriginName" class="form-label">Origin Name</label>
-                        <input asp-for="OriginName" class="form-control" placeholder="Enter the Origin Name"></input>
+                        <input asp-for="OriginName" class="form-control" placeholder="Enter the Origin Name" />
                     </div>
                     <div class="form-group mb-3">
-                        <label asp-for="Family" class="form-label">Coral Name</label>
-                        <input asp-for="Family" class="form-control" placeholder="Enter the family"></input>
+                        <label asp-for="Family" class="form-label">Family</label>
+                        <input asp-for="Family" class="form-control" placeholder="Enter the family" />
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="Genus" class="form-label">Genus</label>
-                        <input asp-for="Genus" class="form-control" placeholder="Enter the Genus"></input>
+                        <input asp-for="Genus" class="form-control" placeholder="Enter the Genus" />
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="Species" class="form-label">Species</label>
-                        <input asp-for="Species" class="form-control" placeholder="Enter the Species"></input>
+                        <input asp-for="Species" class="form-control" placeholder="Enter the Species" />
                     </div>
-                    
-                    <div class="d-flex justify-content-between">
+
+                    <!-- Map Input Section -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">Select Coral Center Point</label>
+                        <div id="map" style="height: 400px;"></div>
+                        <small class="form-text text-muted">Click on the map to set the coral center location.</small>
+                    </div>
+
+                    <!-- Hidden inputs for center lat/lng -->
+                    <input type="hidden" id="CenterLat" name="CenterLat" />
+                    <input type="hidden" id="CenterLng" name="CenterLng" />
+
+                    <div class="d-flex justify-content-between mt-3">
                         <button type="submit" class="btn btn-primary">Create</button>
                         <a asp-controller="Home" asp-action="Index" class="btn btn-danger">Cancel</a>
                     </div>
 
-                    <!-- missing shape: needa figure out how we accept an coodinate and create a polygon -->
-                    <!-- missing area: we could cal the area based on the polygon -->
-                    <!-- missing region: a drop box is needed to let client choose region -->
+                    <!-- Future Enhancements -->
+                    <!-- TODO: Add polygon preview? -->
+                    <!-- TODO: Add region dropdown if dynamic -->
+                    <!-- TODO: Calculate area based on generated polygon -->
                 </form>
             </div>
-        </class>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=ADD_API_KEY&callback=initMap" async defer></script>
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2
+            });
+
+            map.addListener("click", function (e) {
+                const lat = e.latLng.lat();
+                const lng = e.latLng.lng();
+
+                // Set hidden input values
+                document.getElementById("CenterLat").value = lat;
+                document.getElementById("CenterLng").value = lng;
+
+                // Place or move marker
+                if (marker) {
+                    marker.setPosition(e.latLng);
+                } else {
+                    marker = new google.maps.Marker({
+                        position: e.latLng,
+                        map: map,
+                        title: "Selected Center"
+                    });
+                }
+            });
+        }
+    </script>
+} *@
+
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>Create @Model.CoralType</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <input type="hidden" name="CoralType" value="@Model.CoralType" />
+                <input type="hidden" name="BasePolygonWKT" value="@Model.BasePolygonWKT" />
+                <input type="hidden" id="CenterLat" name="CenterLat" />
+                <input type="hidden" id="CenterLng" name="CenterLng" />
+
+                <!-- Additional inputs for new properties -->
+
+                <div class="mb-3">
+                    <label class="form-label">Coral Name</label>
+                    <input type="text" class="form-control" name="CoralName" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="OriginName">Origin Name:</label>
+                    <input type="text" id="OriginName" name="OriginName" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Family">Family:</label>
+                    <input type="text" id="Family" name="Family" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Genus">Genus:</label>
+                    <input type="text" id="Genus" name="Genus" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Species">Species:</label>
+                    <input type="text" id="Species" name="Species" class="form-control" />
+                </div>
+
+                <!-- Map input for selecting the center -->
+                <div class="mb-3">
+                    <label>Select a point on the map for coral center:</label>
+                    <div id="map" style="height: 400px;"></div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Create Coral</button>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=ADD_API_KEY&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2
+            });
+
+            let marker = null;
+            map.addListener("click", function (e) {
+                const lat = e.latLng.lat();
+                const lng = e.latLng.lng();
+                document.getElementById("CenterLat").value = lat;
+                document.getElementById("CenterLng").value = lng;
+
+                if (marker) {
+                    marker.setPosition(e.latLng);
+                } else {
+                    marker = new google.maps.Marker({
+                        position: e.latLng,
+                        map: map
+                    });
+                }
+            });
+        }
+    </script>
+}

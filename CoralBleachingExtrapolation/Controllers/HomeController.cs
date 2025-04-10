@@ -9,6 +9,7 @@ using NetTopologySuite.IO;
 using NetTopologySuite.Algorithm;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using NetTopologySuite;
 
 /// <summary>
 /// Date        Version          Name        Comment
@@ -53,31 +54,31 @@ public class HomeController : Controller
 
 
     //--------------------------------Create----------------------------------//
-    public IActionResult Create() //Create
-    {
-        return View();
-    }
+    //public IActionResult Create() //Create
+    //{
+    //    return View();
+    //}
 
-    [HttpPost]
-    public IActionResult Create(WorldCoral obj) //Create PROMOTE: TRY CATCH THIS BRO
-    {
-        //test only -promote: finalized this as we need to create standardized ones next sprint. 
-        //finalized - standard polygons in progress. 
-        //P: okay
+    //[HttpPost]
+    //public IActionResult Create(WorldCoral obj) //Create PROMOTE: TRY CATCH THIS BRO
+    //{
+    //    //test only -promote: finalized this as we need to create standardized ones next sprint. 
+    //    //finalized - standard polygons in progress. 
+    //    //P: okay
 
-        obj.RegionFK = 1;
-        obj.GISAREAKM2 = 1;
-        string wkt = "POLYGON((-75.0 40.0, -73.0 40.5, -74.0 41.0, -75.0 40.0))";
-        var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        var wktReader = new WKTReader(geometryFactory);
-        Polygon polygon = (Polygon)wktReader.Read(wkt);
-        obj.Shape = polygon;
-        obj.Shape.SRID = 4326;
-        //test only
-        _db.tbl_GlobalCoralPolygon.Add(obj);
-        _db.SaveChanges();
-        return RedirectToAction("Index");
-    }
+    //    obj.RegionFK = 1;
+    //    obj.GISAREAKM2 = 1;
+    //    string wkt = "POLYGON((-75.0 40.0, -73.0 40.5, -74.0 41.0, -75.0 40.0))";
+    //    var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    //    var wktReader = new WKTReader(geometryFactory);
+    //    Polygon polygon = (Polygon)wktReader.Read(wkt);
+    //    obj.Shape = polygon;
+    //    obj.Shape.SRID = 4326;
+    //    //test only
+    //    _db.tbl_GlobalCoralPolygon.Add(obj);
+    //    _db.SaveChanges();
+    //    return RedirectToAction("Index");
+    //}
 
 
     //--------------------------------Update----------------------------------//
@@ -144,6 +145,12 @@ public class HomeController : Controller
 
     //--------------------------------Info Page----------------------------------//
     public IActionResult Info()
+    {
+        return View();
+    }
+
+    //--------------------------------Create Page----------------------------------//
+    public IActionResult Create()
     {
         return View();
     }
@@ -221,6 +228,189 @@ public class HomeController : Controller
     }
 
 
+    //--------------------------------Create Mirror Polygon By ID----------------------------------//
+    [HttpGet]
+    public IActionResult Create(int globalCoralId)
+    {
+        // Ensure that the globalCoralId is valid
+        if (globalCoralId <= 0)
+        {
+            return BadRequest("Invalid coral ID.");
+        }
 
+        // Retrieve the base polygon from the database based on the GlobalCoralId
+        var basePolygon = _db.tbl_GlobalCoralPolygon
+                             .FirstOrDefault(x => x.GlobalCoralId == globalCoralId)?
+                             .Shape;
 
+        // If the base polygon is not found, return a NotFound error
+        if (basePolygon == null)
+        {
+            return NotFound("Base polygon not found for the selected coral.");
+        }
+
+        // Convert the base polygon to WKT format for use in the view
+        var basePolygonWKT = WorldCoral.GetWKTFromPolygon(basePolygon);
+
+        // Prepare the model with the coral type and base polygon WKT
+        var coralType = _db.tbl_GlobalCoralPolygon
+                            .FirstOrDefault(x => x.GlobalCoralId == globalCoralId)?
+                            .CoralName;  // Assuming CoralName is in the database
+
+        var model = new CoralCreationViewModel
+        {
+            CoralType = coralType,
+            BasePolygonWKT = basePolygonWKT
+        };
+
+        return View(model);
     }
+
+
+    //--------------------------------Create Mirror Polygon----------------------------------//
+    [HttpPost]
+    public IActionResult Create(string CoralType, string CoralName, string BasePolygonWKT, double CenterLat, double CenterLng,
+                             string OriginName, string Family, string Genus, string Species)
+    {
+        try
+        {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var wktReader = new WKTReader(geometryFactory);
+            var originalPolygon = (Polygon)wktReader.Read(BasePolygonWKT);
+
+            var center = new Coordinate(CenterLng, CenterLat);
+            var shiftedPolygon = ShiftPolygonToCenter(originalPolygon, center);
+
+            // Determine RegionFK based on the center's latitude and longitude
+            int regionFK = GetRegionFK(CenterLat, CenterLng);
+
+            var obj = new WorldCoral
+            {
+                CoralName = CoralName,
+                OriginName = OriginName,
+                Family = Family,
+                Genus = Genus,
+                Species = Species,
+                GISAREAKM2 = null,
+                RegionFK = regionFK,
+                Shape = shiftedPolygon
+            };
+
+            _db.tbl_GlobalCoralPolygon.Add(obj);
+            _db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Error: " + ex.Message);
+            return View();
+        }
+    }
+
+    //--------------------------------Region check----------------------------------//
+    private int GetRegionFK(double latitude, double longitude)
+    {
+        if (latitude > -30 && latitude < 30)
+        {
+            if (longitude < -50)
+                return 1; // Atlantic Ocean
+            if (longitude > 50)
+                return 3; // Pacific Ocean
+            return 2; // Indian Ocean
+        }
+        return 0; // Default or error region
+    }
+
+    //--------------------------------Change Coordinate For Polygon----------------------------------//
+
+    private Polygon ShiftPolygonToCenter(Polygon original, Coordinate newCenter)
+    {
+        var originalCoords = original.Coordinates;
+        var originalCentroid = original.Centroid.Coordinate;
+
+        double deltaX = newCenter.X - originalCentroid.X;
+        double deltaY = newCenter.Y - originalCentroid.Y;
+
+        var shiftedCoords = originalCoords
+            .Select(c => new Coordinate(c.X + deltaX, c.Y + deltaY))
+            .ToArray();
+
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        return geometryFactory.CreatePolygon(shiftedCoords);
+    }
+
+
+    ////--------------------------------Coraltype and correspoing arean----------------------------------//
+    //private double? GetGISAreaByCoralType(string coralType)
+    //{
+    //    switch (coralType)
+    //    {
+    //        case "Staghorn Coral":
+    //            return 50.0; // Example GIS Area for Staghorn Coral
+    //        case "Elkhorn Coral":
+    //            return 45.0; // Example GIS Area for Elkhorn Coral
+    //                         // Add more cases for other coral types
+    //        default:
+    //            return 1.0; // Default GIS Area
+    //    }
+    //}
+
+
+
+
+
+    //private Polygon GenerateCircularPolygon(Coordinate center, double radiusMeters, int numPoints = 36) //original based on RUpesh Lab 3 logic from Basic Programming
+    //{
+    //    var coords = new List<Coordinate>();
+    //    var earthRadius = 6371000.0; // meters
+    //    var lat = ToRadians(center.Y);
+    //    var lng = ToRadians(center.X);
+
+    //    for (int i = 0; i <= numPoints; i++)
+    //    {
+    //        var bearing = 2 * Math.PI * i / numPoints;
+
+    //        var lat2 = Math.Asin(Math.Sin(lat) * Math.Cos(radiusMeters / earthRadius) +
+    //                             Math.Cos(lat) * Math.Sin(radiusMeters / earthRadius) * Math.Cos(bearing));
+    //        var lng2 = lng + Math.Atan2(Math.Sin(bearing) * Math.Sin(radiusMeters / earthRadius) * Math.Cos(lat),
+    //                                    Math.Cos(radiusMeters / earthRadius) - Math.Sin(lat) * Math.Sin(lat2));
+
+    //        coords.Add(new Coordinate(ToDegrees(lng2), ToDegrees(lat2)));
+    //    }
+
+    //    coords.Add(coords[0]); // Close polygon
+
+    //    // Reverse coordinates to ensure counter-clockwise order
+    //    coords.Reverse();
+
+    //    var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+    //    return geometryFactory.CreatePolygon(coords.ToArray());
+    //}
+
+    //private double ToRadians(double degrees) => degrees * Math.PI / 180.0;
+    //private double ToDegrees(double radians) => radians * 180.0 / Math.PI;
+
+
+
+
+
+
+    //public IActionResult CreateFromStaghorn()
+    //{
+    //    int globalCoralId = 17166; // Replace with actual ID for Staghorn
+    //    var basePolygon = _db.tbl_GlobalCoralPolygon.FirstOrDefault(x => x.GlobalCoralId == globalCoralId)?.Shape;
+
+    //    if (basePolygon == null)
+    //        return NotFound("Base polygon not found");
+
+    //    var model = new CoralCreationViewModel
+    //    {
+    //        CoralType = "Staghorn Coral",
+    //        BasePolygonWKT = WorldCoral.GetWKTFromPolygon(basePolygon)
+    //    };
+
+    //    return View("~/Views/WorldCoral/Create.cshtml", model);
+    //}
+
+}
