@@ -54,16 +54,16 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const corals = [
-                { name: "Staghorn Coral", id: 1135 },
-                { name: "Elkhorn Coral", id: 6138 },
-                { name: "Brain Coral", id: 6784 },
-                { name: "Pillar Coral", id: 7072 },
-                { name: "Lettuce Coral", id: 10543 },
-                { name: "Star Coral", id: 11543 },
-                { name: "Table Coral", id: 14589 },
-                { name: "Foliose Coral", id: 16158 },
-                { name: "Bubble Coral", id: 16919 },
-                { name: "Mushroom Coral", id: 17166 }
+                { name: "Staghorn Coral", CoralName: "World_Reef8527" },
+                { name: "Elkhorn Coral", CoralName: "World_Reef8073" },
+                { name: "Brain Coral", CoralName: "World_Reef982" },
+                { name: "Pillar Coral", CoralName: "World_Reef3161" },
+                { name: "Lettuce Coral", CoralName: "World_Reef3944" },
+                { name: "Star Coral", CoralName: "World_Reef4292" },
+                { name: "Table Coral", CoralName: "World_Reef7869" },
+                { name: "Foliose Coral", CoralName: "World_Reef4227" },
+                { name: "Bubble Coral", CoralName: "World_Reef384" },
+                { name: "Mushroom Coral", CoralName: "World_Reef2950" }
             ];
 
             const container = document.getElementById("coral-list");
@@ -73,7 +73,7 @@
                 col.className = "col-md-4 col-lg-3 mb-3";
 
                 col.innerHTML = `
-                    <a href="/Home/Create?globalCoralId=${coral.id}" class="text-decoration-none">
+                           <a href="/Home/Create?globalCoralName=${coral.CoralName}" class="text-decoration-none">
                         <div class="card h-100 shadow-sm border-0 hover-shadow">
                             <div class="card-body text-center">
                                 <h6 class="card-title text-primary">${coral.name}</h6>

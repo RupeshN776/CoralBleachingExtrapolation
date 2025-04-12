@@ -93,8 +93,25 @@
 
 <div class="container mt-4">
     <div class="card">
+        @{
+            var coralMap = new Dictionary<string, string>
+        {
+        { "World_Reef8527", "Staghorn Coral" },
+        { "World_Reef8073", "Elkhorn Coral" },
+        { "World_Reef982", "Brain Coral" },
+        { "World_Reef3161", "Pillar Coral" },
+        { "World_Reef3944", "Lettuce Coral" },
+        { "World_Reef4292", "Star Coral" },
+        { "World_Reef7869", "Table Coral" },
+        { "World_Reef4227", "Foliose Coral" },
+        { "World_Reef384", "Bubble Coral" },
+        { "World_Reef2950", "Mushroom Coral" }
+        };
+
+            var coralDisplayName = coralMap.ContainsKey(Model.CoralType) ? coralMap[Model.CoralType] : Model.CoralType;
+        }
         <div class="card-header bg-primary text-white">
-            <h2>Create @Model.CoralType</h2>
+            <h2>Create @coralDisplayName</h2>
         </div>
         <div class="card-body">
             <form asp-action="Create" method="post">

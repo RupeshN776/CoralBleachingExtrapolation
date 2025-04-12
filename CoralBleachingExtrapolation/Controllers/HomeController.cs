@@ -35,53 +35,20 @@ public class HomeController : Controller
 
     //PROMOTE: COMMENT ALL
 
-    //--------------------------------Read All----------------------------------//
+    //--------------------------------The cover page----------------------------------//
     public IActionResult Index()
     {
-        //TheModel = _db.tbl_GlobalCoralPolygon.ToList();
-
-        //TheModel = _db.tbl_GlobalCoralPolygon
-        //                   .OrderByDescending(x => x.GlobalCoralId) // Sort by ID in descending order
-        //                   .Take(10)                     // Get the last 10 records
-        //                   .ToList();
 
         return View();
     }
 
-    //--------------------------------Read One:TODO----------------------------------// PROMOTE: MISSING TRY CATACH WHY? //only used in assembly
+    //--------------------------------The page that get random polygon ----------------------------------// PROMOTE: MISSING TRY CATACH WHY? //only used in assembly
     public IActionResult Read()
     {
         ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
         return View();//return
     }
 
-
-    //--------------------------------Create----------------------------------//
-    //public IActionResult Create() //Create
-    //{
-    //    return View();
-    //}
-
-    //[HttpPost]
-    //public IActionResult Create(WorldCoral obj) //Create PROMOTE: TRY CATCH THIS BRO
-    //{
-    //    //test only -promote: finalized this as we need to create standardized ones next sprint. 
-    //    //finalized - standard polygons in progress. 
-    //    //P: okay
-
-    //    obj.RegionFK = 1;
-    //    obj.GISAREAKM2 = 1;
-    //    string wkt = "POLYGON((-75.0 40.0, -73.0 40.5, -74.0 41.0, -75.0 40.0))";
-    //    var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-    //    var wktReader = new WKTReader(geometryFactory);
-    //    Polygon polygon = (Polygon)wktReader.Read(wkt);
-    //    obj.Shape = polygon;
-    //    obj.Shape.SRID = 4326;
-    //    //test only
-    //    _db.tbl_GlobalCoralPolygon.Add(obj);
-    //    _db.SaveChanges();
-    //    return RedirectToAction("Index");
-    //}
 
 
     //--------------------------------Update----------------------------------//
@@ -136,7 +103,7 @@ public class HomeController : Controller
 
         return View(obj);
     }
-    //--------------------------------Delete:TODO----------------------------------// PROMOTE: THROWS ERROR, REMOVE FROM CLIENT SIDE || FIX
+    //--------------------------------Delete(The functionality is disable)----------------------------------//
 
     public IActionResult Delete(WorldCoral obj) //Delete
     {
@@ -159,6 +126,11 @@ public class HomeController : Controller
         return View();
     }
 
+    //--------------------------------New Page----------------------------------//
+    public IActionResult New()
+    {
+        return View();
+    }
     //--------------------------------Read Random Polygon----------------------------------//
 
     [HttpGet]
@@ -195,9 +167,11 @@ public class HomeController : Controller
     //--------------------------------Read Polygon By ID----------------------------------//
 
     [HttpGet]
-    public IActionResult GetPolygonById(int id)
+    public IActionResult GetLatestPolygonJson()
     {
-        var coral = _db.tbl_GlobalCoralPolygon.FirstOrDefault(c => c.GlobalCoralId == id);
+        var coral = _db.tbl_GlobalCoralPolygon
+                   .OrderByDescending(c => c.GlobalCoralId)
+                   .FirstOrDefault();
 
         if (coral == null || coral.Shape == null)
         {
@@ -234,15 +208,15 @@ public class HomeController : Controller
 
     //--------------------------------Create Mirror Polygon By ID----------------------------------//
     [HttpGet]
-    public IActionResult Create(int globalCoralId)
+    public IActionResult Create(string globalCoralName)
     {
-        if (globalCoralId <= 0)
+        if (globalCoralName == null)
         {
-            return BadRequest("Invalid coral ID.");
+            return BadRequest("Invalid coral.");
         }
 
         var coralEntity = _db.tbl_GlobalCoralPolygon
-                             .FirstOrDefault(x => x.GlobalCoralId == globalCoralId);
+                             .FirstOrDefault(x => x.CoralName == globalCoralName);
 
         if (coralEntity == null || coralEntity.Shape == null)
         {
@@ -303,7 +277,7 @@ public class HomeController : Controller
             _db.tbl_GlobalCoralPolygon.Add(obj);
             _db.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("New");
         }
         catch (Exception ex)
         {
@@ -398,8 +372,6 @@ public class HomeController : Controller
 
     //private double ToRadians(double degrees) => degrees * Math.PI / 180.0;
     //private double ToDegrees(double radians) => radians * 180.0 / Math.PI;
-
-
 
 
 
