@@ -10,6 +10,7 @@ using NetTopologySuite.Algorithm;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using NetTopologySuite;
+using Microsoft.Extensions.Options;
 
 /// <summary>
 /// Date        Version          Name        Comment
@@ -23,12 +24,13 @@ using NetTopologySuite;
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _db;
-
+    private readonly GoogleApiSettings _googleApiSettings;
     List<WorldCoral> TheModel;
 
-    public HomeController(ApplicationDbContext db)
+    public HomeController(ApplicationDbContext db, IOptions<GoogleApiSettings> googleApiOptions)
     {
         _db = db;
+        _googleApiSettings = googleApiOptions.Value;
     }
 
     //PROMOTE: COMMENT ALL
@@ -49,6 +51,7 @@ public class HomeController : Controller
     //--------------------------------Read One:TODO----------------------------------// PROMOTE: MISSING TRY CATACH WHY? //only used in assembly
     public IActionResult Read()
     {
+        ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
         return View();//return
     }
 
@@ -152,6 +155,7 @@ public class HomeController : Controller
     //--------------------------------Create Page----------------------------------//
     public IActionResult Create()
     {
+        ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
         return View();
     }
 
@@ -252,6 +256,7 @@ public class HomeController : Controller
             CoralType = coralEntity.CoralName,
             BasePolygonWKT = basePolygonWKT
         };
+        ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
 
         return View(model);
     }

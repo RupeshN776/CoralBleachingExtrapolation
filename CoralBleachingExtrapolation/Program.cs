@@ -21,6 +21,8 @@ builder.Services.AddDbContext<ApplicationDbContextGBR>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.UseNetTopologySuite() // Enable spatial support
     ));
+builder.Services.Configure<GoogleApiSettings>(
+    builder.Configuration.GetSection("GoogleApi"));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

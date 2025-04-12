@@ -111,29 +111,30 @@ namespace CoralBleachingExtrapolation
         static void Main(string[] args) 
         {
             //copied from Controller
-            var builder = WebApplication.CreateBuilder(args);
+            //var builder = WebApplication.CreateBuilder(args);
 
             
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
-            x => x.UseNetTopologySuite() // Enable spatial support
-            ));
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //options.UseSqlServer(
+            //builder.Configuration.GetConnectionString("DefaultConnection"),
+            //x => x.UseNetTopologySuite() // Enable spatial support
+            //));
 
             
-            var serviceProvider = builder.Services.BuildServiceProvider();
+            //var serviceProvider = builder.Services.BuildServiceProvider();
 
             
-            var dbContext = serviceProvider.GetRequiredService<ApplicationDbContextGBR>();
+            //var dbContext = serviceProvider.GetRequiredService<ApplicationDbContextGBR>();
+
 
             
-            var GBRcontroller = new GBRController(dbContext);
+            //var GBRcontroller = new GBRController(dbContext);
 
 
-            //Index read all 
+            ////Index read all 
           
-            var index_result = GBRcontroller.Index(); 
-            Console.WriteLine("Index Read All: " + (index_result));
+            //var index_result = GBRcontroller.Index(); 
+            //Console.WriteLine("Index Read All: " + (index_result));
 
 
 

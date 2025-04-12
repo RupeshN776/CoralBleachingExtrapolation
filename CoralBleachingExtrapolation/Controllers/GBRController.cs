@@ -9,6 +9,8 @@ using NetTopologySuite.IO;
 using NetTopologySuite.Algorithm;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
+
 
 /// <summary>
 /// Date         Version     Name       Comment
@@ -27,23 +29,21 @@ namespace CoralBleachingExtrapolation.Controllers
     public class GBRController : Controller
     {
         private readonly ApplicationDbContextGBR _db;
+        private readonly GoogleApiSettings _googleApiSettings;
 
         List<GBRCoralPoint> TheModel;
 
-        public GBRController(ApplicationDbContextGBR db)
+        public GBRController(ApplicationDbContextGBR db, IOptions<GoogleApiSettings> googleApiOptions)
         {
             _db = db;
+            _googleApiSettings = googleApiOptions.Value;
         }
 
         //--------------------------------Read All----------------------------------//
         public IActionResult Index() // Read
         {
-            //TheModel = _db.tbl_GlobalCoralPolygon.ToList();
-
-            TheModel = _db.tbl_GBRCoralPoint
-                               .ToList();
-
-
+            TheModel = _db.tbl_GBRCoralPoint.ToList();
+            ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
 
             return View(TheModel);
         }
@@ -53,6 +53,8 @@ namespace CoralBleachingExtrapolation.Controllers
         //--------------------------------Create----------------------------------//
         public IActionResult Create() //Create
         {
+            ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
+
             return View();
         }
 
