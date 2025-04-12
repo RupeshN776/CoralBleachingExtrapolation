@@ -232,34 +232,24 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Create(int globalCoralId)
     {
-        // Ensure that the globalCoralId is valid
         if (globalCoralId <= 0)
         {
             return BadRequest("Invalid coral ID.");
         }
 
-        // Retrieve the base polygon from the database based on the GlobalCoralId
-        var basePolygon = _db.tbl_GlobalCoralPolygon
-                             .FirstOrDefault(x => x.GlobalCoralId == globalCoralId)?
-                             .Shape;
+        var coralEntity = _db.tbl_GlobalCoralPolygon
+                             .FirstOrDefault(x => x.GlobalCoralId == globalCoralId);
 
-        // If the base polygon is not found, return a NotFound error
-        if (basePolygon == null)
+        if (coralEntity == null || coralEntity.Shape == null)
         {
             return NotFound("Base polygon not found for the selected coral.");
         }
 
-        // Convert the base polygon to WKT format for use in the view
-        var basePolygonWKT = WorldCoral.GetWKTFromPolygon(basePolygon);
-
-        // Prepare the model with the coral type and base polygon WKT
-        var coralType = _db.tbl_GlobalCoralPolygon
-                            .FirstOrDefault(x => x.GlobalCoralId == globalCoralId)?
-                            .CoralName;  // Assuming CoralName is in the database
+        var basePolygonWKT = WorldCoral.GetWKTFromPolygon(coralEntity.Shape);
 
         var model = new CoralCreationViewModel
         {
-            CoralType = coralType,
+            CoralType = coralEntity.CoralName,
             BasePolygonWKT = basePolygonWKT
         };
 
@@ -270,18 +260,27 @@ public class HomeController : Controller
     //--------------------------------Create Mirror Polygon----------------------------------//
     [HttpPost]
     public IActionResult Create(string CoralType, string CoralName, string BasePolygonWKT, double CenterLat, double CenterLng,
-                             string OriginName, string Family, string Genus, string Species)
+                         string OriginName, string Family, string Genus, string Species)
     {
         try
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             var wktReader = new WKTReader(geometryFactory);
-            var originalPolygon = (Polygon)wktReader.Read(BasePolygonWKT);
 
+            if (string.IsNullOrWhiteSpace(BasePolygonWKT))
+            {
+                ModelState.AddModelError("", "Polygon data is missing.");
+                return View(new CoralCreationViewModel
+                {
+                    CoralType = CoralType,
+                    BasePolygonWKT = BasePolygonWKT
+                });
+            }
+
+            var originalPolygon = (Polygon)wktReader.Read(BasePolygonWKT);
             var center = new Coordinate(CenterLng, CenterLat);
             var shiftedPolygon = ShiftPolygonToCenter(originalPolygon, center);
 
-            // Determine RegionFK based on the center's latitude and longitude
             int regionFK = GetRegionFK(CenterLat, CenterLng);
 
             var obj = new WorldCoral
@@ -304,7 +303,11 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Error: " + ex.Message);
-            return View();
+            return View(new CoralCreationViewModel
+            {
+                CoralType = CoralType,
+                BasePolygonWKT = BasePolygonWKT
+            });
         }
     }
 
