@@ -3,6 +3,7 @@
 <!--4-7-2025   2.0               Ben           bootstrap and revamp the frontend desgin-->
 <!--4-7-2025   3.0               Rupesh        Add link for create polygon-->
 <!--4-7-2025   3.1               Ben           change backend logic for create polygon base on reefname-->
+<!--4-8-2025   3.1               Rupesh        add png for coral type as 3D models are difficult to render.-->
 
 
 
@@ -81,15 +82,16 @@
                 col.className = "col-md-4 col-lg-3 mb-3";
 
                 col.innerHTML = `
-                           <a href="/Home/Create?globalCoralName=${coral.CoralName}" class="text-decoration-none">
-                        <div class="card h-100 shadow-sm border-0 hover-shadow">
-                            <div class="card-body text-center">
-                                <h6 class="card-title text-primary">${coral.name}</h6>
-                                <p class="card-text text-muted">Click to create this coral type</p>
+                        <a href="/Home/Create?globalCoralName=${coral.CoralName}" class="text-decoration-none">
+                            <div class="card h-100 shadow-sm border-0 hover-shadow">
+                                <img src="/assets/${coral.CoralName}.png" class="card-img-top p-3" alt="${coral.name}" style="height: 150px; object-fit: contain;">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-primary">${coral.name}</h6>
+                                    <p class="card-text text-muted">Click to create this coral type</p>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                `;
+                        </a>
+                    `;
 
                 container.appendChild(col);
             });

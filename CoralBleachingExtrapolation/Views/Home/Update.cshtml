@@ -11,7 +11,7 @@
                     <input type="hidden" asp-for="GlobalCoralId" />
                     <div class="form-group mb-3">
                         <label asp-for="CoralName" class="form-label">Coral Name</label>
-                        <input asp-for="CoralName" class="form-control" placeholder="Enter the Coral Name"></input>
+                        <input asp-for="CoralName" class="form-control" placeholder="Enter the Coral Name" readonly ></input>
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="OriginName" class="form-label">Origin Name</label>
@@ -33,22 +33,17 @@
                         <label asp-for="Shape" class="form-label">Shape (WKT Format)</label>
                         <input asp-for="Shape" class="form-control" placeholder="POLYGON ((...))" readonly />
                     </div>
-
                     <!-- Hidden field to store WKT string -->
                     <input type="hidden" name="ShapeWkt" value="@Model.Shape?.ToString()" />
+
                     <div class="form-group mb-3">
                         <label asp-for="GISAREAKM2" class="form-label">Area</label>
-                        <input asp-for="GISAREAKM2" class="form-control" placeholder=""></input>
+                        <input asp-for="GISAREAKM2" class="form-control" placeholder="" readonly></input>
                         <span asp-validation-for="GISAREAKM2" class="text-danger"></span>
                     </div>
-                    <div class="form-group mb-3">
-                        <label asp-for="RegionFK" class="form-label">Oceanic Region</label>
-                        <select asp-for="RegionFK" class="form-control">
-                            <option value="1">Atlantic Ocean</option>
-                            <option value="2">Indian Ocean</option>
-                            <option value="3">Pacific Ocean</option>
-                        </select>
-                    </div>
+
+                    <input type="hidden" name="RegionFK" value="@Model.RegionFK" />
+
 
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">Update</button>

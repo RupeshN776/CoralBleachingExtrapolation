@@ -9,6 +9,8 @@ using Microsoft.SqlServer.Types;
 /// <summary>
 /// 02-02-2025  1.0     Ben      Create WorldCoral Model
 /// 03-24-2025  1.1     Ben      Json Serialize
+/// 01-04-2025  1.2     Rupesh   Add convert from wkt to Lat lng
+/// 
 /// </summary>
 /// 
 
@@ -38,26 +40,27 @@ namespace CoralBleachingExtrapolation.Models
         }
         public static string ConvertWKTToLatLng(string wkt)
         {
-            if (string.IsNullOrEmpty(wkt)) return "[]";
+            if (string.IsNullOrEmpty(wkt)) return "[]"; //check if string is empty
 
             try
             {
-                string coordinatesPart = wkt.Replace("POLYGON ((", "").Replace("))", "");
+                string coordinatesPart = wkt.Replace("POLYGON ((", "").Replace("))", ""); //didnt know this existed but its very similar to how replace works in notepadd++
                 var coordinatePairs = coordinatesPart.Split(',');
 
                 var latLngList = coordinatePairs.Select(pair =>
                 {
-                    var coords = pair.Trim().Split(' ');
+                    var coords = pair.Trim().Split(' '); //split use as , is delimiter
                     double lng = double.Parse(coords[0]); // X
                     double lat = double.Parse(coords[1]); // Y
                     return new { lat, lng };
                 }).ToList();
 
+                 //seralize 
                 return System.Text.Json.JsonSerializer.Serialize(latLngList);
             }
             catch
             {
-                return "[]"; // Fallback in case of malformed WKT
+                return "[]";//try catch to prevent break page
             }
         }
 

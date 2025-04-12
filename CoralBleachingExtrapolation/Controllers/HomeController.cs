@@ -17,7 +17,8 @@ using Microsoft.Extensions.Options;
 /// 25-2-2025   1.0              Ben         Create, Read, Update, Delete template
 /// 03-22-2025  PROMOTE          Rupesh      PROMOTE TESTING and COMMENTS
 /// 27-3-2025   1.1              Ben         Bug fixes based on promote comments
-/// 04-02-2025  2.0              Rupesh
+/// 04-02-2025  2.0              Rupesh      Create Read Random polygon. Add button to home/read.cshtml. Write ReadRandomPolygon
+/// 04-02-2025  2.0.1            Rupesh      Create Polygon - get and post according to the info and create cashtml
 /// 04-04-2025  2.1              Ben         Create GetLatestPolygonJson
 /// 04-11-2025   2.3             Ben         Add GoogleApiSettings 
 /// </summary>
@@ -134,27 +135,30 @@ public class HomeController : Controller
     {
         return View();
     }
-    //--------------------------------Read Random Polygon----------------------------------//
+    //--------------------------------Read Random Polygon----------------------------------// Rupesh
 
     [HttpGet]
     public IActionResult GetRandomPolygonJson()
     {
         var randomCoral = _db.tbl_GlobalCoralPolygon
                              .OrderBy(r => Guid.NewGuid())
-                             .FirstOrDefault();
+                             .FirstOrDefault(); //get random polygon from the database. 
+                                                //for some reason it doesnt work as well if i do it with the entity model for some reason
 
         if (randomCoral == null || randomCoral.Shape == null)
         {
-            return Json(new { success = false, message = "No valid coral polygon found." });
+            return Json(new { success = false, message = "No valid coral polygon found." }); //check if polygon is even there
         }
 
-        string wkt = WorldCoral.GetWKTFromPolygon(randomCoral.Shape);
-        string polygonJson = WorldCoral.ConvertWKTToLatLng(wkt);
+        string wkt = WorldCoral.GetWKTFromPolygon(randomCoral.Shape); //convert shape from db to wkt string because it that is easier since we use Polygon object in the World.cs
+
+
+        string polygonJson = WorldCoral.ConvertWKTToLatLng(wkt); // since google polygon requires str we use the convert wkt to lat lng in World.cs to convert
 
         return Json(new
         {
             success = true,
-            polygon = polygonJson,
+            polygon = polygonJson, // 
             coralName = randomCoral.CoralName,
             originName = randomCoral.OriginName,
             family = randomCoral.Family,
@@ -163,7 +167,7 @@ public class HomeController : Controller
             gisAreaKm2 = randomCoral.GISAREAKM2,
             regionId = randomCoral.RegionFK,
             id = randomCoral.GlobalCoralId
-        });
+        }); // this will be shown in the infowindow 
     }
 
 
@@ -209,31 +213,41 @@ public class HomeController : Controller
     }
 
 
-    //--------------------------------Create Mirror Polygon By ID----------------------------------//
+    //--------------------------------Create Mirror Polygon By ID----------------------------------// 
+    /// <summary>
+    /// This entire process is based on the logic from Rupesh's lab 3 in last semester where i trace a polygon then get the distance and bearing and then apply that dist and bearing to a new coordiante
+    /// </summary>
+    /// <param name="globalCoralName"></param>
+    /// <returns></returns>
+    /// 
+    //this is the get and connects to info.csthml, works when coral button is clicked 
     [HttpGet]
     public IActionResult Create(string globalCoralName)
     {
         if (globalCoralName == null)
         {
-            return BadRequest("Invalid coral.");
+            return BadRequest("Invalid coral."); //check is broken
         }
 
         var coralEntity = _db.tbl_GlobalCoralPolygon
-                             .FirstOrDefault(x => x.CoralName == globalCoralName);
+                             .FirstOrDefault(x => x.CoralName == globalCoralName); //so since the coral name is unqiue as well, we can just search by cornal Name because apprently, DML insertion is random so if we do it by ID, it messes it up
 
         if (coralEntity == null || coralEntity.Shape == null)
         {
-            return NotFound("Base polygon not found for the selected coral.");
+            return NotFound("Base polygon not found for the selected coral."); //check if exists in database. 
         }
 
+        //same as earlier, get polygon
         var basePolygonWKT = WorldCoral.GetWKTFromPolygon(coralEntity.Shape);
 
-        var model = new CoralCreationViewModel
+
+        //
+        var model = new CoralCreationViewModel //we create a seperate model to store the create values. 
         {
             CoralType = coralEntity.CoralName,
             BasePolygonWKT = basePolygonWKT
         };
-        ViewBag.GoogleApiKey = _googleApiSettings.ApiKey;
+        ViewBag.GoogleApiKey = _googleApiSettings.ApiKey; //localized api key
 
         return View(model);
     }
@@ -242,7 +256,7 @@ public class HomeController : Controller
     //--------------------------------Create Mirror Polygon----------------------------------//
     [HttpPost]
     public IActionResult Create(string CoralType, string CoralName, string BasePolygonWKT, double CenterLat, double CenterLng,
-                         string OriginName, string Family, string Genus, string Species)
+                         string OriginName, string Family, string Genus, string Species) //this takes in input from the create.cshtml
     {
         try
         {
@@ -251,7 +265,7 @@ public class HomeController : Controller
 
             if (string.IsNullOrWhiteSpace(BasePolygonWKT))
             {
-                ModelState.AddModelError("", "Polygon data is missing.");
+                ModelState.AddModelError("", "Polygon data is missing."); //check missing data
                 return View(new CoralCreationViewModel
                 {
                     CoralType = CoralType,
@@ -259,11 +273,11 @@ public class HomeController : Controller
                 });
             }
 
-            var originalPolygon = (Polygon)wktReader.Read(BasePolygonWKT);
+            var originalPolygon = (Polygon)wktReader.Read(BasePolygonWKT); //get original polygon based on click from database (comes from info.cshtml)
             var center = new Coordinate(CenterLng, CenterLat);
-            var shiftedPolygon = ShiftPolygonToCenter(originalPolygon, center);
+            var shiftedPolygon = ShiftPolygonToCenter(originalPolygon, center); //move polygon to diff coords
 
-            int regionFK = GetRegionFK(CenterLat, CenterLng);
+            int regionFK = GetRegionFK(CenterLat, CenterLng); //get region int based on lat long
 
             var obj = new WorldCoral
             {
@@ -275,14 +289,14 @@ public class HomeController : Controller
                 GISAREAKM2 = null,
                 RegionFK = regionFK,
                 Shape = shiftedPolygon
-            };
+            }; //add to world coral model as we need to save to db
 
             _db.tbl_GlobalCoralPolygon.Add(obj);
             _db.SaveChanges();
 
-            return RedirectToAction("New");
+            return RedirectToAction("New"); //if saves to db go back to home
         }
-        catch (Exception ex)
+        catch (Exception ex) //if breaks due to 
         {
             ModelState.AddModelError("", "Error: " + ex.Message);
             return View(new CoralCreationViewModel
@@ -296,7 +310,7 @@ public class HomeController : Controller
     //--------------------------------Region check----------------------------------//
     private int GetRegionFK(double latitude, double longitude)
     {
-        if (latitude > -30 && latitude < 30)
+        if (latitude > -30 && latitude < 30) //tbh this is not accurate at all, just a bit better then not being there
         {
             if (longitude < -50)
                 return 1; // Atlantic Ocean
@@ -309,7 +323,7 @@ public class HomeController : Controller
 
     //--------------------------------Change Coordinate For Polygon----------------------------------//
 
-    private Polygon ShiftPolygonToCenter(Polygon original, Coordinate newCenter)
+    private Polygon ShiftPolygonToCenter(Polygon original, Coordinate newCenter) //move polygon to center - inspired by clay 
     {
         var originalCoords = original.Coordinates;
         var originalCentroid = original.Centroid.Coordinate;
@@ -324,23 +338,6 @@ public class HomeController : Controller
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         return geometryFactory.CreatePolygon(shiftedCoords);
     }
-
-
-    ////--------------------------------Coraltype and correspoing arean----------------------------------//
-    //private double? GetGISAreaByCoralType(string coralType)
-    //{
-    //    switch (coralType)
-    //    {
-    //        case "Staghorn Coral":
-    //            return 50.0; // Example GIS Area for Staghorn Coral
-    //        case "Elkhorn Coral":
-    //            return 45.0; // Example GIS Area for Elkhorn Coral
-    //                         // Add more cases for other coral types
-    //        default:
-    //            return 1.0; // Default GIS Area
-    //    }
-    //}
-
 
 
 
@@ -377,6 +374,8 @@ public class HomeController : Controller
     //private double ToDegrees(double radians) => radians * 180.0 / Math.PI;
 
 
+
+    ///////////////Orignally i was going to create a individual controller for each polygon //////////////
 
 
     //public IActionResult CreateFromStaghorn()

@@ -81,59 +81,6 @@
             loadRandomPolygon();
         });
     }
-    // Handle "Show on Map" button click from the table
-    document.addEventListener("click", async function (e) {
-        if (e.target && e.target.classList.contains("show-on-map")) {
-            const coralId = e.target.getAttribute("data-id");
-            try {
-                const res = await fetch(`/Home/GetPolygonById?id=${coralId}`);
-                const data = await res.json();
-                if (!data.success || !data.polygon) {
-                    alert("Could not load selected polygon.");
-                    return;
-                }
-                if (currentPolygon) {
-                    currentPolygon.setMap(null);
-                }
-                const coords = JSON.parse(data.polygon);
-                const bounds = new google.maps.LatLngBounds();
-                currentPolygon = new google.maps.Polygon({
-                    paths: coords,
-                    strokeColor: "#008000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#008000",
-                    fillOpacity: 0.35
-                });
-                currentPolygon.setMap(map);
-                coords.forEach(coord => bounds.extend(new google.maps.LatLng(coord.lat, coord.lng)));
-                map.fitBounds(bounds);
-                currentPolygon.addListener("click", (event) => {
-                    const contentHtml = `
-                                <div class="info-window">
-                                    <h4>${data.coralName || "Unknown Coral"}</h4>
-                                    <ul>
-                                        <li><strong>Origin:</strong> ${data.originName || "N/A"}</li>
-                                        <li><strong>Family:</strong> ${data.family || "N/A"}</li>
-                                        <li><strong>Genus:</strong> ${data.genus || "N/A"}</li>
-                                        <li><strong>Species:</strong> ${data.species || "N/A"}</li>
-                                        <li><strong>Area (km²):</strong> ${data.gisAreaKm2?.toFixed(2) || "N/A"}</li>
-                                        <li><strong>Region:</strong> ${data.regionName}</li>
-                                        <li><strong>Lat:</strong> ${event.latLng.lat().toFixed(5)}</li>
-                                        <li><strong>Lng:</strong> ${event.latLng.lng().toFixed(5)}</li>
-                                    </ul>
-                                    <a href="/Home/Update/${data.id}" class="btn btn-primary btn-sm" target="_blank">Update</a>
-                                </div>
-                            `;
-                    infoWindow.setContent(contentHtml);
-                    infoWindow.setPosition(event.latLng);
-                    infoWindow.open(map);
-                });
-            } catch (err) {
-                console.error("Error fetching polygon by ID:", err);
-            }
-        }
-    });
     window.initMap = initMap;
 </script>
 
