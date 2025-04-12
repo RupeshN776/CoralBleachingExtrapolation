@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 /// <summary>
 /// 25-02-2025  1.0     Ben       Point GBR Implimenting UML (GBRCoral.cs) 
 /// 06-02-2025  1.0.1   Keelin   Adding context for ApplicationDbContextGBR
+/// 04-11-2025  1.0.2   Ben       Add config for google API
 /// </summary>
 /// 
 

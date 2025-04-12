@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
+
+/// <summary>
+/// 02-02-2025  1.0     Ben      Create Model
+/// </summary>
+/// 
 namespace CoralBleachingExtrapolation.ViewModels
 {
     public class GBRCoralViewModel : Controller

@@ -5,6 +5,13 @@ using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
 using Microsoft.SqlServer.Types;
 
+
+/// <summary>
+/// 02-02-2025  1.0     Ben      Create WorldCoral Model
+/// 03-24-2025  1.1     Ben      Json Serialize
+/// </summary>
+/// 
+
 namespace CoralBleachingExtrapolation.Models
 {
     public class WorldCoral

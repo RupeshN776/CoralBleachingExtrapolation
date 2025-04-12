@@ -18,7 +18,10 @@ using Microsoft.Extensions.Options;
 /// 03-15-2025   1.0.1       Keelin     bug fixes
 /// 03-22-2025   1.0.2       Keelin     more bug fixes
 /// 03-22-2025   PROMOTE     Rupesh     PROMOTE TESTING and COMMENTS
-/// 03-24-2025   1.0.2       Keelin     bug fixes based on promote code
+/// 03-24-2025   1.0.3       Keelin     bug fixes based on promote code  
+/// 04-02-2025   2.1         Ben        Revamp Index and Create to fix the current frontend design
+/// 04-04-2025   2.2         Ben        Fix update Bug
+/// 04-11-2025   2.3         Ben        Add GoogleApiSettings 
 /// </summary>
 /// 
 

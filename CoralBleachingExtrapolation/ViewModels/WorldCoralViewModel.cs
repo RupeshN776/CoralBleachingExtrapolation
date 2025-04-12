@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 
+/// <summary>
+/// 02-03-2025  1.0     Keelin      Create Model
+/// </summary>
+/// 
 namespace CoralBleachingExtrapolation.ViewModels
 {
     public class WorldCoralViewModel

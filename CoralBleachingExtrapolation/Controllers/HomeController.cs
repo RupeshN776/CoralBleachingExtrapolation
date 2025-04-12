@@ -17,6 +17,9 @@ using Microsoft.Extensions.Options;
 /// 25-2-2025   1.0              Ben         Create, Read, Update, Delete template
 /// 03-22-2025  PROMOTE          Rupesh      PROMOTE TESTING and COMMENTS
 /// 27-3-2025   1.1              Ben         Bug fixes based on promote comments
+/// 04-02-2025  2.0              Rupesh
+/// 04-04-2025  2.1              Ben         Create GetLatestPolygonJson
+/// 04-11-2025   2.3             Ben         Add GoogleApiSettings 
 /// </summary>
 
 
